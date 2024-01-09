@@ -29,7 +29,7 @@ EspMQTTClient client(
 #define PIN       3 // On Trinket or Gemma, suggest changing this to 1
 
 // How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS 16 // Popular NeoPixel ring size
+#define NUMPIXELS 64 // Popular NeoPixel ring size
 #define MQTT_DEVICENAME "LED1"
 #define MQTT_REALM "dedale"
 
@@ -39,7 +39,7 @@ EspMQTTClient client(
 // strandtest example for more information on possible values.
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-#define DELAYVAL 500 // Time (in milliseconds) to pause between pixels
+#define DELAYVAL 5 // Time (in milliseconds) to pause between pixels
 
 String GetTopic(String topic)
 {
@@ -70,13 +70,19 @@ void setup() {
 
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
 
-
+  SetAllPixelsColor(255,0,0); 
   //Serial.println("coucou");
 
 }
 
-void OnMessagefromBoomer(const String & payload)
+void OnMessageSet(const String & payload)
 {
+  if(payload=="black")
+     SetAllPixelsColor(0,0,0); 
+  if(payload=="red")
+     SetAllPixelsColor(255,0,0); 
+  if(payload=="blue")
+     SetAllPixelsColor(0,0,255); 
   client.publish(GetTopic("OK").c_str(),payload);
 }
 
@@ -97,31 +103,38 @@ void onConnectionEstablished()
   //client.subscribe(GetTopic("leds/#").c_str(), [](const String & topic, const String & payload) {
   //  client.publish(GetTopic("answer").c_str(),"Le bug est la");
   //});
-  client.subscribe(GetTopic("leds/boomer").c_str(), OnMessagefromBoomer);
+  client.subscribe(GetTopic("leds/set").c_str(), OnMessageSet);
   client.subscribe(GetTopic("leds/genZ").c_str(), OnMessagefromGenZ);
   
  
   ///////
   client.publish(GetTopic("status/connected").c_str(),"1",true);  //true is for retain (durée de vie des messages MQTT)
+  pixels.clear(); // Set all pixel colors to 'off'
 
+}
+
+int count=0;
+
+void SetAllPixelsColor(int r, int g, int b)
+{
+ for(int i=0; i<NUMPIXELS; i++) {
+    //pixels.clear();
+    pixels.setPixelColor(i, pixels.Color(r, g, b));
+ }
+ pixels.show();
 }
 
 
 void loop() {
-  pixels.clear(); // Set all pixel colors to 'off'
   client.loop();
 
-  // The first NeoPixel in a strand is #0, second is 1, all the way up
-  // to the count of pixels minus one.
-  for(int i=0; i<NUMPIXELS; i++) { // For each pixel...
+  // count++;
+  // count = count%256;
+  // if(count<128)
+  //   SetAllPixelsColor(2,0,0);
+  // else
+  //   SetAllPixelsColor(0,0,2);
 
-    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    // Here we're using a moderately bright green color:
-    pixels.setPixelColor(i, pixels.Color(0, 150, 0));
+  delay(DELAYVAL);
 
-    pixels.show();   // Send the updated pixel colors to the hardware.
-
-    //delay(DELAYVAL); // Pause before next pass through loop
-
-  }
 }
