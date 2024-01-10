@@ -29,7 +29,7 @@ EspMQTTClient client(
 #define PIN       3 // On Trinket or Gemma, suggest changing this to 1
 
 // How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS 64 // Popular NeoPixel ring size
+#define NUMPIXELS 300 // Popular NeoPixel ring size
 #define MQTT_DEVICENAME "LED1"
 #define MQTT_REALM "dedale"
 
@@ -77,13 +77,13 @@ void setup() {
 
 void OnMessageSet(const String & payload)
 {
-  if(payload=="black")
+  if(payload=="black" || payload=="\"black\"")
      SetAllPixelsColor(0,0,0); 
-  if(payload=="red")
+  if(payload=="red" || payload=="\"red\"")
      SetAllPixelsColor(255,0,0); 
-  if(payload=="blue")
+  if(payload=="blue" || payload=="\"blue\"")
      SetAllPixelsColor(0,0,255); 
-  client.publish(GetTopic("OK").c_str(),payload);
+  client.publish(GetTopic("OK set").c_str(),payload);
 }
 
 
@@ -103,7 +103,7 @@ void onConnectionEstablished()
   //client.subscribe(GetTopic("leds/#").c_str(), [](const String & topic, const String & payload) {
   //  client.publish(GetTopic("answer").c_str(),"Le bug est la");
   //});
-  client.subscribe(GetTopic("leds/set").c_str(), OnMessageSet);
+  client.subscribe(GetTopic("animation/set").c_str(), OnMessageSet);
   client.subscribe(GetTopic("leds/genZ").c_str(), OnMessagefromGenZ);
   
  
