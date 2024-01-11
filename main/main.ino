@@ -44,25 +44,33 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 #define DELAYVAL 5  // Time (in milliseconds) to pause between pixels
 
 int whichAnimation = 1;  //0=Black 1=Corruption 2=
+char WillMessage[255];
+String nameLED;
 
 
 
 String GetTopic(String topic) {
-  return (String(MQTT_REALM) + "/devices/" + MQTT_DEVICENAME + "/" + topic);
+  return (String(MQTT_REALM) + "/devices/" + nameLED + "/" + topic);
+  //return (String(MQTT_REALM) + "/devices/" + MQTT_DEVICENAME + "/" + topic);
 }
 
-char WillMessage[255];
 
 
 void setup() {
   Serial.begin(115200);
+
+  Serial.print("ESP Board MAC Address:  ");
+  String macAddress = WiFi.macAddress();
+  Serial.println(WiFi.macAddress());
+  nameLED = "LED"+ macAddress.substring(12,14) + macAddress.substring(15,17);
+
 
   // specific Mehdi
   pinMode(4, OUTPUT);
   digitalWrite(4, HIGH);
   GetTopic("status/connected").toCharArray(WillMessage, 255);
   client.enableLastWillMessage(WillMessage, "0", true);
-  //Serial.println("coucou1");
+ 
 
   // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
   // Any other board, you can remove this part (but no harm leaving it):
@@ -74,8 +82,9 @@ void setup() {
 
   pixels.begin();  // INITIALIZE NeoPixel strip object (REQUIRED)
 
-  SetAllPixelsColor(255, 0, 0);
+  SetAllPixelsColor(0, 0, 0);
   //Serial.println("coucou");
+
 }
 
 void OnMessageSet(const String& payload) {
@@ -143,7 +152,6 @@ int count = 0;
 
 void SetAllPixelsColor(int r, int g, int b) {
   for (int i = 0; i < NUMPIXELS; i++) {
-    //pixels.clear();
     pixels.setPixelColor(i, pixels.Color(r, g, b));
   }
   pixels.show();
@@ -154,16 +162,13 @@ void loop() {
   client.loop();
 
   DoAnimation(whichAnimation);
-  // count++;
-  // count = count%256;
-  // if(count<128)
-  //   SetAllPixelsColor(2,0,0);
-  // else
-  //   SetAllPixelsColor(0,0,2);
 
   //delay(DELAYVAL);
-  Serial.print("ESP Board MAC Address:  ");
-  Serial.println(WiFi.macAddress());
+  if(0)
+  {
+   Serial.println(WiFi.macAddress());
+   Serial.println(nameLED);
+  }
 }
 
 //ESP Board MAC Address:  EC:FA:BC:2F:ED:FC
