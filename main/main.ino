@@ -1,29 +1,42 @@
 
+
+////////////////////////////////////////
+//// Choix de la machine
+////////////////////////////////////////
+
+
 // specific Mehdi
 //Board type : NodeMCU 1.0 ESP12E
 
+// specific Olivier
+//Board type : Arduin Nano
+// choisir dans le menu : "Processor: ATmega328P (Old BootLoader)""
 
-// NeoPixel Ring simple sketch (c) 2013 Shae Erisson
-// Released under the GPLv3 license to match the rest of the
-// Adafruit NeoPixel library
+// Which pin on the Arduino is connected to the NeoPixels?
+// specific Mehdi 3 au lieu de 6
+//#define PIN 3  // On Trinket or Gemma, suggest changing this to 1
+#define PIN 9  // For Arduino
 
-#define USE_SERIAL_PRINT 1
-#define USE_MQTT 1
+
+////////////////////////////
+//// Options de l'application
+////////////////////////////
+
+
+#define USE_SERIAL_PRINT 0
+#define USE_MQTT 0
 #define USE_MQTT_DEBUG 0
-#define SHOW_MAC_ADDRESS 1
-#define DELAYVAL 100  // Time (in milliseconds) to pause between loop
-#define SALLE_MAGIE 1
-#define SALLE_MINE 0
+#define SHOW_MAC_ADDRESS 0
+#define DELAYVAL 0  // Time (in milliseconds) to pause between loop
+#define SALLE_MAGIE 0
+#define SALLE_MINE 1
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS 300  // Popular NeoPixel ring size
 
-// Which pin on the Arduino is connected to the NeoPixels?
-// specific Mehdi 3 au lieu de 6
-#define PIN 3  // On Trinket or Gemma, suggest changing this to 1
-//#define PIN 9  // For Arduin
 
-
+////////////////////////////
+//// Gestion Communication MQTT
 ////////////////////////////
 // on utilise la macAdress
 // pour l'identification de la led
@@ -62,6 +75,10 @@ String GetTopic(String topic) {
 
 
 
+////////////////////////////
+// NeoPixel Ring simple sketch (c) 2013 Shae Erisson
+// Released under the GPLv3 license to match the rest of the
+// Adafruit NeoPixel library
 ////////////////////////////
 // gestion des LEDS
 
