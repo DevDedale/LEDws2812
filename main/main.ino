@@ -144,7 +144,7 @@ void DoAnimation(int which) {
   if (which == 1)
   {
   #if SALLE_MAGIE==1
-    DoAnimationCorruptionMagie();
+    //DoAnimationCorruptionMagie();
   #else
     DoAnimationCorruptionMine();
   #endif
