@@ -14,8 +14,8 @@
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // specific Mehdi 3 au lieu de 6
-//#define PIN 3  // On Trinket or Gemma, suggest changing this to 1
-#define PIN 9  // For Arduino
+#define PIN 3  // On Trinket or Gemma, suggest changing this to 1
+//#define PIN 9  // For Arduino
 
 
 ////////////////////////////
@@ -24,12 +24,13 @@
 
 
 #define USE_SERIAL_PRINT 0
-#define USE_MQTT 0
+#define USE_MQTT 1
 #define USE_MQTT_DEBUG 0
 #define SHOW_MAC_ADDRESS 0
 #define DELAYVAL 0  // Time (in milliseconds) to pause between loop
-#define SALLE_MAGIE 0
-#define SALLE_MINE 1
+#define SALLE_MAGIE 1
+#define SALLE_MINE 0
+#define USE_LED 1
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS 300  // Popular NeoPixel ring size
@@ -57,8 +58,11 @@
 EspMQTTClient client(
   "mgi-dedale",
   "xi6Hoogh",
-  "10.65.0.200"  // MQTT Broker server ip
-);
+  "10.65.0.200",  // MQTT Broker server ip
+  "",   // Can be omitted if not needed
+  "",   // Can be omitted if not needed
+  "ClientLED5"     // Client name that uniquely identify your device
+  );
 
 String nameLED;
 
@@ -144,7 +148,7 @@ void DoAnimation(int which) {
   if (which == 1)
   {
   #if SALLE_MAGIE==1
-    //DoAnimationCorruptionMagie();
+    DoAnimationCorruptionMagie();
   #else
     DoAnimationCorruptionMine();
   #endif
@@ -209,7 +213,10 @@ void setup() {
 
   ///// Choix du nom pour MQTT //////
   #if USE_MQTT == 1
+
+  #if USE_MQTT_DEBUG == 1
   client.enableDebuggingMessages(); 
+  #endif
 
   String macAddress = WiFi.macAddress();
   nameLED = "LED"+ macAddress.substring(12,14) + macAddress.substring(15,17);
@@ -219,9 +226,9 @@ void setup() {
   Serial.println(WiFi.macAddress());
   #endif
 
-  bool result = client.setMaxPacketSize(256);
-  client.enableMQTTPersistence();
-  client.setMqttReconnectionAttemptDelay( 1);  
+  //bool result = client.setMaxPacketSize(256);
+  //client.enableMQTTPersistence();
+  client.setMqttReconnectionAttemptDelay( 1000);  
 
   // specific Mehdi
   pinMode(4, OUTPUT);
@@ -240,8 +247,10 @@ void setup() {
 #endif
   // END of Trinket-specific code.
   
+#if USE_LED==1
   pixels.begin();  // INITIALIZE NeoPixel strip object (REQUIRED)
   SetAllPixelsColor(250, 0, 0);
+#endif
 }
 
 
@@ -250,14 +259,15 @@ void loop() {
     client.loop();
   #endif
 
+  #if USE_LED==1
   nowMilli = millis();
-
   if(nowMilli - lastMilli > 5)
   {
     DoAnimation(whichAnimation);
     lastMilli = nowMilli;
     //Serial.println(nowMilli);
   }
+  #endif
 
   if(DELAYVAL>0)
     delay(DELAYVAL);
