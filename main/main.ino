@@ -61,7 +61,7 @@ EspMQTTClient client(
   "10.65.0.200",  // MQTT Broker server ip
   "",   // Can be omitted if not needed
   "",   // Can be omitted if not needed
-  "ClientLED5"     // Client name that uniquely identify your device
+  "ClientLED1"     // Client name that uniquely identify your device
   );
 
 String nameLED;
